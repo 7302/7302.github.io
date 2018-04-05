@@ -238,13 +238,16 @@ Polynomial.prototype.toString = function () {
   for (var i = 0; i < this.m; i++) {
     if (this.c[i].p.n != 0) {
       var k = formatRat(this.c[i]);
-      str += (str.length > 0 && !this.c[i].b > 0 ? '+' : '') + (k == 1 ? '' : k) + 'x' + Utils.subU(this.m - i);
+      str += (!this.c[i].b ? (str.length == 0 ? '' : '+') : '')//Игнорил минусы у целых чисел
+        + (k == 1 ? '' : (k == this.c[i] ? k : (this.c[i].b ? "-" + k : k)))//берет знак исходника и приписывает к форматированному числу
+        + 'x'
+        + Utils.subU(this.m - i);
     }
   }
 
   var constant = this.c[this.m];
-  if (constant.p.n != 0 || str.length == 0)
-    str += (str.length > 0 && !constant.b ? '+' : '') + formatRat(constant);
+  if (constant.p.n != 0 || str.length == 0)//Tакая же фигня, выглядит конечно костыльно, но вроде работает
+    str += (!constant.b ? (str.length == 0 ? '' : '+') : (formatRat(constant) == constant ? '' : (constant.b ? "-" : ''))) + formatRat(constant);//Тут тоже
   return str;
 };
 Polynomial.prototype.valueOf = Polynomial.prototype.toString;
