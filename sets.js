@@ -65,9 +65,12 @@ var Natural =
         return this.arr;
       },
       set: function set(val) {
-        if (!Array.isArray(val))
-          val = val.toString().split('');
-        this.arr = val.map(function (digit) { return Number(digit); });
+       var num;
+        if (Array.isArray(val))
+          num = val;
+        else
+          num = val.toString().split('');
+        this.arr = num.map(function (digit) { return Number(digit); });
         if (!/^\d+$/.test(this.arr.join('')))
           throw new Error('Invalid value for Natural');
       }
@@ -84,7 +87,6 @@ var Natural =
     return Natural;
   }();
 Natural.prototype.toString = function () { return this.a.join(''); };
-Natural.prototype.valueOf = Natural.prototype.toString;
 
 // Множество целых чисел
 var Integer =
@@ -101,19 +103,22 @@ var Integer =
         return this.natural.a;
       },
       set: function set(val) {
-        if (!Array.isArray(val))
-          val = val.toString().split('');
-        if (!/^-?\d+$/.test(val.join('')))
+        var num;
+        if (Array.isArray(val))
+          num = val.slice(0);
+        else
+          num = val.toString().split('');
+        if (!/^-?\d+$/.test(num.join('')))
          throw new Error('Invalid value for Integer');
 
-        if (val[0] === '-') {
+        if (num[0] === '-') {
           this.negative = true;
-          val.shift();
+          num.shift();
         }
         else
           this.negative = false;
 
-        this.natural = new Natural(val);
+        this.natural = new Natural(num);
       }
     }, {
       key: 'n',
@@ -133,7 +138,6 @@ var Integer =
     return Integer;
   }();
 Integer.prototype.toString = function () { return (this.b ? '-' : '') + this.natural; };
-Integer.prototype.valueOf = Integer.prototype.toString;
 
 // Множество рациональных чисел
 var Rational =
@@ -187,7 +191,6 @@ Rational.prototype.toString = function () {
     str += '/' + this.denumerator;
   return str;
 };
-Rational.prototype.valueOf = Rational.prototype.toString;
 
 // Многочлен
 var Polynomial =
@@ -205,7 +208,11 @@ var Polynomial =
       },
       set: function set(val) {
         if (Array.isArray(val))
-          this.arr = val;else this.arr = val.toString().split(' ');
+          this.arr = val.toString().split(',');
+        else if (val.c && Array.isArray(val.c))
+          this.arr = val.c.toString().split(',');
+        else
+          this.arr = val.toString().split(' ');
         for (var i = 0; i < this.arr.length; i++) {
           this.arr[i] = new Rational(this.arr[i]);
         }
@@ -239,7 +246,7 @@ Polynomial.prototype.toString = function () {
     if (this.c[i].p.n != 0) {
       var k = formatRat(this.c[i]);
       str += (!this.c[i].b ? (str.length == 0 ? '' : '+') : '')//Игнорил минусы у целых чисел
-        + (k == 1 ? '' : (k == this.c[i] ? k : (this.c[i].b ? "-" + k : k)))//берет знак исходника и приписывает к форматированному числу
+        + (k == 1 ? (!this.c[i].b ? '' : '-') : (k == this.c[i] ? k : (this.c[i].b ? "-" + k : k)))//берет знак исходника и приписывает к форматированному числу
         + 'x'
         + Utils.subU(this.m - i);
     }
@@ -250,4 +257,3 @@ Polynomial.prototype.toString = function () {
     str += (!constant.b ? (str.length == 0 ? '' : '+') : (formatRat(constant) == constant ? '' : (constant.b ? "-" : ''))) + formatRat(constant);//Тут тоже
   return str;
 };
-Polynomial.prototype.valueOf = Polynomial.prototype.toString;

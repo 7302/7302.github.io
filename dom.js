@@ -47,15 +47,16 @@ function processForm(form) {
   for (var _i = 0; _i < module.reqFields.length; _i++)
     args.push(new module.reqFields[_i].classType(form[module.reqFields[_i].name].value));
   var timeBeforeCall = performance.now();
-  var retVal = module.func.apply(this, args);
-  var elapsedTime = performance.now() - timeBeforeCall;
-
-  // Формируем результат
-  if (typeof retVal !== 'string') {
+  try {
+    var retVal = module.func.apply(this, args);
+    var elapsedTime = performance.now() - timeBeforeCall;
+    // Формируем результат
     if (module.formatter !== undefined)
       retVal = module.formatter(retVal);
     else if (module.returnCodes !== undefined)
       retVal = module.returnCodes[retVal];
+  } catch (e) {
+    retVal = e;
   }
 
   // Выводим
@@ -109,7 +110,8 @@ function validateOpt(option) {
     'N0': /^(?:0|[1-9][0-9]*)$/,                                                            // Натуральное с нулем
     'Z': /^(?:0|-?[1-9][0-9]*)$/,                                                           // Целое
     'Q': /^(?:0|-?[1-9][0-9]*(?:\/[1-9][0-9]*)?)$/,                                         // Рациональное
-    'P': /^(?:0|-?[1-9][0-9]*(?:\/[1-9][0-9]*)?)(?: 0| -?[1-9][0-9]*(?:\/[1-9][0-9]*)?)*$/  // Коэффициенты многочлена
+    'P': /^(?:0|-?[1-9][0-9]*(?:\/[1-9][0-9]*)?)(?: 0| -?[1-9][0-9]*(?:\/[1-9][0-9]*)?)*$/, // Коэффициенты многочлена
+    'digit': /^\d$/                                                                         // Цифра
   };
   var regexType = option.classList.item(0);
   if (regexps[regexType] === undefined)
