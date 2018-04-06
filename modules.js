@@ -277,6 +277,21 @@ var Modules = {
     }],
     description: "Остаток от деления большего целого числа на меньшее или равное натуральное с остатком (делитель отличен от нуля)"
   },
+  GCF_NN_N: {
+    func: GCF_NN_N,
+    reqFields: [{
+      caption: "Первое число",
+      name: "num1",
+      classType: Natural,
+      regexType: "N0"
+    }, {
+      caption: "Второе число",
+      name: "num2",
+      classType: Natural,
+      regexType: "N0"
+    }],
+    description: "НОД натуральных чисел"
+  },
   RED_Q_Q: {
     func: RED_Q_Q,
     reqFields: [{
@@ -536,6 +551,24 @@ function MUL_ND_N(num, k){
   if (i < 0 && perenos !== null) // Если при последенем умножении получилось двухзначное число
     result.a.unshift(perenos); // Добавляем еще одну цифру слева
   return result;
+}
+
+//НОД натуральных чисел GCF_NN_N
+//MOD_NN_N Остаток от деления большего натурального числа на меньшее или равное натуральное с остатком (делитель отличен от нуля) 
+//NZER_N_B Проверка на ноль: если число не равно нулю, то «да» иначе «нет» 
+//COM_NN_D Сравнение натуральных чисел: 2 - если первое больше второго, 0, если равно, 1 иначе.
+function GCF_NN_N(num1, num2){
+  var temp = 0;
+	while (NZER_N_B(num2) == 1) {
+    temp = num2;
+    if (COM_NN_D(num1, num2) == 2){
+      MOD_NN_N(num1, num2)
+    } else {
+      MOD_NN_N(num2,num1);
+    }
+		num1 = temp;
+	}
+  return num1;
 }
 
 // Сокращение дроби RED_Q_Q
