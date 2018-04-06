@@ -277,6 +277,16 @@ var Modules = {
     }],
     description: "Остаток от деления большего целого числа на меньшее или равное натуральное с остатком (делитель отличен от нуля)"
   },
+  RED_Q_Q: {
+    func: RED_Q_Q,
+    reqFields: [{
+      caption: 'Число',
+      name: 'num',
+      classType: Rational,
+      regexType: 'Q'
+    }],
+    description: 'Сокращение дроби',
+  },
   INT_Q_B: {
     func: INT_Q_B,
     reqFields: [{
@@ -525,6 +535,17 @@ function MUL_ND_N(num, k){
   }
   if (i < 0 && perenos !== null) // Если при последенем умножении получилось двухзначное число
     result.a.unshift(perenos); // Добавляем еще одну цифру слева
+  return result;
+}
+
+// Сокращение дроби RED_Q_Q
+//Абсолютная величина числа, результат - натуральное ABS_Z_N
+//НОД натуральных чисел GCF_NN_N
+//Частное от деления большего целого числа на меньшее или равное натуральное с остатком DIV_ZZ_Z
+function RED_Q_Q(num){
+  var result = new Rational(num);
+  result.p = DIV_ZZ_Z(num.p, GCF_NN_N(ABS_Z_N(num.p), num.q));
+  result.q = DIV_ZZ_Z(num.q, GCF_NN_N(ABS_Z_N(num.p), num.q));
   return result;
 }
 
