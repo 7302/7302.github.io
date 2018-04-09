@@ -908,15 +908,6 @@ function SUB_PP_P(poly1, poly2) {
   return result;
 }
 
-function MUL_PQ_P(poly, num) {
-  var result = new Polynomial(poly);
-  for (var i = 0; i < result.d.length; i++) {
-    var degree = result.d[i];
-    result.c[degree] = MUL_QQ_Q(result.c[degree], num); // Перемножаем каждый коэф на число
-  }
-  return result;
-}
-
 function MUL_Pxk_P(poly, k) {
   var result = new Polynomial(0);
   for (var i = 0; i < poly.d.length; i++) {
