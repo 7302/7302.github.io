@@ -255,11 +255,23 @@ function runTests() {
     th(DIV_QQ_Q(new Rational('12/8'), new Rational('42/7')) == '84/336');
     th(DIV_QQ_Q(new Rational('123/123'), new Rational('123/123')) == '15129/15129');
     //P1
-    //!!!
+    th(ADD_PP_P(new Polynomial('0'), new Polynomial('0')) == '0');
+    th(ADD_PP_P(new Polynomial('42'), new Polynomial('42')) == '84');
+    th(ADD_PP_P(new Polynomial('42'), new Polynomial('-42')) == '0');
+    th(ADD_PP_P(new Polynomial('1x^4+2x^3+3x^2+4x+5'), new Polynomial('3x^3+x+6')) == 'x⁴+5x³+3x²+5x+11');
+    th(ADD_PP_P(new Polynomial('3/2x^12+4x^7-12/7x^19+17x-42'), new Polynomial('3x^3+x+6')) == '-12/7x¹⁹+3/2x¹²+4x⁷+3x³+18x-36');
     //P2
-    //!!!
+    th(SUB_PP_P(new Polynomial('0'), new Polynomial('0')) == '0');
+    th(SUB_PP_P(new Polynomial('42'), new Polynomial('42')) == '0');
+    th(SUB_PP_P(new Polynomial('42'), new Polynomial('-42')) == '84');
+    th(SUB_PP_P(new Polynomial('1x^4+2x^3+3x^2+4x+5'), new Polynomial('3x^3+x+6')) == 'x⁴-1x³+3x²+3x-1');
+    th(SUB_PP_P(new Polynomial('3/2x^12+4x^7-12/7x^19+17x-42'), new Polynomial('3x^3+x+6')) == '-12/7x¹⁹+3/2x¹²+4x⁷-3x³+16x-48');
     //P3
-    //!!!
+    th(MUL_PQ_P(new Polynomial('0'), new Rational('0')) == '0');
+    th(MUL_PQ_P(new Polynomial('42'), new Rational('0')) == '0');
+    th(MUL_PQ_P(new Polynomial('42'), new Rational('42')) == '1764');
+    th(MUL_PQ_P(new Polynomial('1x^4+2x^3+3x^2+4x+5'), new Rational('42')) == '42x⁴+84x³+126x²+168x+210');
+    th(MUL_PQ_P(new Polynomial('3/2x^12+4x^7-12/7x^19+17x-42'), new Rational('42')) == '-72x¹⁹+63x¹²+168x⁷+714x-1764');
     //P4
     th(MUL_Pxk_P(new Polynomial('0'), new Natural('0')) == '0');
     th(MUL_Pxk_P(new Polynomial('0'), new Natural('1')) == '0');
@@ -279,11 +291,21 @@ function runTests() {
     //P7
     //!!!
     //P8
-    //!!!
+    th(MUL_PQ_P(new Polynomial('0'), new Polynomial('0')) == '0');
+    th(MUL_PQ_P(new Polynomial('42'), new Polynomial('0')) == '0');
+    th(MUL_PQ_P(new Polynomial('42'), new Polynomial('42')) == '1764');
+    th(MUL_PP_P(new Polynomial('1x^4+2x^3+3x^2+4x+5'), new Polynomial('3x^3+x+6')) == '3x⁷+6x⁶+10x⁵+20x⁴+30x³+22x²+29x+30');
+    th(MUL_PP_P(new Polynomial('3/2x^12+4x^7-12/7x^19+17x-42'), new Polynomial('3x^3+x+6')) == '-36/7x²²-12/7x²⁰-72/7x¹⁹+9/2x¹⁵+3/2x¹³+9x¹²+12x¹⁰+4x⁸+24x⁷+51x⁴-126x³+17x²+60x-252');
     //P9
-    //!!!
+    th(DIV_PP_P(new Polynomial('0'), new Polynomial('42')) == '0');
+    th(DIV_PP_P(new Polynomial('42'), new Polynomial('42')) == '1');
+    th(DIV_PP_P(new Polynomial('1x^4+2x^3+3x^2+4x+5'), new Polynomial('3x^3+x+6')) == '1/3x+2/3');
+    th(DIV_PP_P(new Polynomial('3/2x^12+4x^7-12/7x^19+17x-42'), new Polynomial('3x^3+x+6')) == '-4/7x¹⁶+4/21x¹⁴+8/7x¹³-4/63x¹²-16/21x¹¹-428/189x¹⁰+37/42x⁹+1292/567x⁸+1601/378x⁷-4289/1701x⁶-967/162x⁵-32134/5103x⁴+7975/1134x³+214897/15309x²+104611/10206x-860872/45927');
     //P10
-    //!!!
+    th(MOD_PP_P(new Polynomial('0'), new Polynomial('42')) == '0');
+    th(MOD_PP_P(new Polynomial('42'), new Polynomial('42')) == '0');
+    th(MOD_PP_P(new Polynomial('1x^4+2x^3+3x^2+4x+5'), new Polynomial('3x^3+x+6')) == '8/3x²+4/3x+1');
+    th(MOD_PP_P(new Polynomial('3/2x^12+4x^7-12/7x^19+17x-42'), new Polynomial('3x^3+x+6')) == '-964199/10206x²-1182866/45927x+1078766/15309');
     //P11
     //!!!
     //P12

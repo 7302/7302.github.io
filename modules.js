@@ -408,6 +408,32 @@ var Modules = {
       regexType: 'P'
     }]
   },
+  ADD_PP_P: {
+    description: 'Сложение многочленов',
+    comment: 'Многочлен вводится в виде a₀x^n₀+a₁x^n₁...aₙ₋₁x+a, например - 3/2x^12+4x^7-12/7x^19+17x-42',
+      reqFields: [{
+      caption: 'Многочлен',
+      classType: Polynomial,
+      regexType: 'P'
+    }, {
+      caption: 'Многочлен',
+      classType: Polynomial,
+      regexType: 'P'
+    }]
+  },
+  SUB_PP_P: {
+    description: 'Вычитание многочленов',
+    comment: 'Многочлен вводится в виде a₀x^n₀+a₁x^n₁...aₙ₋₁x+a, например - 3/2x^12+4x^7-12/7x^19+17x-42',
+    reqFields: [{
+      caption: 'Многочлен',
+      classType: Polynomial,
+      regexType: 'P'
+    }, {
+      caption: 'Многочлен',
+      classType: Polynomial,
+      regexType: 'P'
+    }]
+  },
   MUL_PQ_P: {
     description: 'Умножение многочлена на рациональное число',
     comment: 'Многочлен вводится в виде a₀x^n₀+a₁x^n₁...aₙ₋₁x+aₙ, например - 3/2x^12+4x^7-12/7x^19+17x-42',
@@ -451,9 +477,9 @@ var Modules = {
       classType: Polynomial,
       regexType: 'P'
     }, {
-        caption: 'Многочлен',
-        classType: Polynomial,
-        regexType: 'P'
+      caption: 'Многочлен',
+      classType: Polynomial,
+      regexType: 'P'
     }]
   },
   MOD_PP_P: {
@@ -464,9 +490,9 @@ var Modules = {
       classType: Polynomial,
       regexType: 'P'
     }, {
-        caption: 'Многочлен',
-        classType: Polynomial,
-        regexType: 'P'
+      caption: 'Многочлен',
+      classType: Polynomial,
+      regexType: 'P'
     }]
   }
 };
@@ -895,10 +921,14 @@ function DER_P_P(poly) {
 //Умножение многочлена на рациональное число MUL_PQ_P
 //MUL_QQ_Q Умножение дробей
 function MUL_PQ_P(poly, num) {
-  for (var i = 0; i <= poly.m; i++) {
-    poly.c[i] = MUL_QQ_Q(poly.c[i], num);
+  var result = new Polynomial(0);
+  for (var i = 0; i < poly.d.length; i++) {
+    var degree = poly.d[i];
+    result.add(new Natural(degree), MUL_QQ_Q(poly.c[degree], new Rational(num)));
   }
-  return poly;
+  if (result.m < 0)
+    result.add(new Natural(0), new Rational(0));
+  return result;
 }
 
 //Умножение многочленов MUL_PP_P
@@ -906,14 +936,49 @@ function MUL_PQ_P(poly, num) {
 //MUL_Pxk_P Умножение многочлена на x^k
 //ADD_PP_P Сложение многочленов
 function MUL_PP_P(poly1, poly2) {
-  var poly = new Polynomial();
-  for (let i = 0; i <= poly2.m; i++) {
-    var tempPoly = new Polynomial();
-    tempPoly = MUL_PQ_P(poly1, new Rational(poly2.c[i].a));
-    tempPoly = MUL_Pxk_P(tempPoly, poly2.m - i);
-    poly = ADD_PP_P(poly, tempPoly);
+  var result = new Polynomial(0);
+  for (var i = 0; i < poly1.d.length; i++) {
+    var tempPoly = new Polynomial(0);
+    var degree = poly1.d[i];
+    tempPoly = MUL_PQ_P(new Polynomial(poly2), new Rational(poly1.c[degree]));
+    tempPoly = MUL_Pxk_P(tempPoly, degree);
+    result = ADD_PP_P(result, tempPoly);
   }
-  return poly;
+  return result;
+}
+
+//Сложение многочленов ADD_PP_P
+//ADD_QQ_Q
+function ADD_PP_P(poly1, poly2){
+  var max = (COM_NN_D(DEG_P_N(poly1), DEG_P_N(poly2)) != 1) ? DEG_P_N(poly1) : DEG_P_N(poly2);
+  var result = new Polynomial(0);
+  for(var i = 0; i<= max; i++){
+    var num1 = poly1.c[i] ? poly1.c[i] : new Rational(0);
+    var num2 = poly2.c[i] ? poly2.c[i] : new Rational(0);
+    var k = new Rational(ADD_QQ_Q(num1, num2));
+    if(k && k.p != '0')
+      result.add(new Natural(i), k);
+  }
+  if (result.m < 0)
+    result.add(new Natural(0), new Rational(0));
+  return result;
+}
+
+//Вычитание многочленов SUB_PP_P
+//SUB_QQ_Q
+function SUB_PP_P(poly1, poly2){
+  var max = (COM_NN_D(DEG_P_N(poly1), DEG_P_N(poly2)) != 1) ? DEG_P_N(poly1) : DEG_P_N(poly2);
+  var result = new Polynomial(0);
+  for(var i = 0; i<= max; i++){
+    var num1 = poly1.c[i] ? poly1.c[i] : new Rational(0);
+    var num2 = poly2.c[i] ? poly2.c[i] : new Rational(0);
+    var k = new Rational(SUB_QQ_Q(num1, num2));
+    if(k && k.p != '0')
+     result.add(new Natural(i), k);
+  }
+  if (result.m < 0)
+    result.add(new Natural(0), new Rational(0));
+  return result;
 }
 
 //Частное от деления многочлена на многочлен при делении с остатком DIV_PP_P
@@ -921,30 +986,36 @@ function MUL_PP_P(poly1, poly2) {
 //DEG_P_N Степень многочлена
 //MUL_Pxk_P Умножение многочлена на x^k
 //SUB_PP_P Вычитание многочленов
-//ADD_PP_P 	Сложение многочленов
-function DIV_PP_P(poly1, poly2) {
-  var poly = new Polynomial();
-  while (DEG_P_N(poly1) >= DEG_P_N(poly2)) {
-    var tempPoly = new Polynomial();
-    var x = DIV_QQ_Q(new Rational(poly1.c[i].a), new Rational(poly2.c[poly2.m].a));
-    var k = poly1.m - 1;
-    poly.push(new Rational(x));
-    tempPoly = MUL_PQ_P(poly1, new Rational(poly2.c[i].a));
-    tempPoly = MUL_Pxk_P(tempPoly, poly2.m - i);
-    poly1 = SUB_PP_P(poly1, tempPoly);
+//ADD_PP_P  Сложение многочленов
+function DIV_PP_P(poly1, poly2)
+{
+  var result = new Polynomial(0);
+  var temp = new Polynomial(poly1);
+  while (COM_NN_D(DEG_P_N(temp), DEG_P_N(poly2)) != 1)
+  {
+    var tempPoly = new Polynomial(0);
+    var x = new Rational(RED_Q_Q(DIV_QQ_Q(new Rational(temp.c[DEG_P_N(temp)]), new Rational(poly2.c[DEG_P_N(poly2)]))));
+    var k = new Natural(DEG_P_N(temp) - DEG_P_N(poly2));
+    if(!x.p || x.p == '0')
+      break;
+    result.add(k, new Rational(x));
+    tempPoly = MUL_PQ_P(poly2, result.c[k]);
+    tempPoly = MUL_Pxk_P(tempPoly, k);
+    temp = SUB_PP_P(temp, tempPoly);
   }
-  return poly;
+  return result;
 }
 
 //Остаток от деления многочлена на многочлен при делении с остатком MOD_PP_P
 //DIV_PP_P Частное от деления многочлена на многочлен при делении с остатком
 //MUL_PP_P Умножение многочленов
 //SUB_PP_P Вычитание многочленов
-function MOD_PP_P(poly1, poly2) {
+function MOD_PP_P(poly1, poly2)
+{
   var tempPoly = DIV_PP_P(poly1, poly2);
-  if (tempPoly.m == 1 && tempPoly.c[0] == 0)
-    return poly1;
-  var int = MUL_PP_P(tempPoly, poly);
-  var poly = SUB_PP_P(tempPoly, poly2);
-  return poly;
+  if (tempPoly.m == '0' && tempPoly.c[0].p == '0')
+   return poly1;
+  var integer = MUL_PP_P(tempPoly, poly2);
+  var result = SUB_PP_P(poly1, integer);
+  return result;
 }
